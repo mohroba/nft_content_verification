@@ -5,7 +5,7 @@ require("solidity-docgen");
 // Import OpenZeppelin plugin
 require("hardhat-contract-sizer");
 require("@openzeppelin/hardhat-upgrades");
-require("dotenv/config");
+require("@nomicfoundation/hardhat-chai-matchers");
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -34,7 +34,7 @@ module.exports = {
       url: "https://rpc-mumbai.maticvigil.com",
       chainId: 80001,
       accounts: [
-        process.env.MUMBAI_ACCOUNT_PRIVATE_KEY, // Account Private Key
+        "7c3fc63514cb86af990525ff264cc6135dc2081b7796af9adaadba6920abb3b2", // Account Private Key
       ],
     },
   },
@@ -43,7 +43,7 @@ module.exports = {
     currency: "USD",
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: "",
   },
   docgen: {},
 };

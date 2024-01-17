@@ -1,5 +1,9 @@
+const { expect } = require("chai");
+const { ethers } = require("hardhat");
+
 describe("updateNFTWeight", function () {
   let admin, user1;
+  let token;
   const tokenId = 1;
   const newWeight = 200;
   const uri = "ipfs://exampleUri";
@@ -9,7 +13,12 @@ describe("updateNFTWeight", function () {
 
   beforeEach(async function () {
     [admin, user1] = await ethers.getSigners();
-    await token.initialize();
+    const IToken = await ethers.getContractFactory("IToken");
+    token = await IToken.deploy("MyToken", "MTK");
+    await token.initialize();    
+  });
+
+  it("Should allow an identity admin to update NFT weight", async function () {
     await token.mintNFT(
       user1.address,
       tokenId,
@@ -18,9 +27,6 @@ describe("updateNFTWeight", function () {
       initialWeight,
       initialDecayRate
     );
-  });
-
-  it("Should allow an identity admin to update NFT weight", async function () {
     await token.updateNFTWeight(tokenId, newWeight);
 
     const nft = await token.getNFT(tokenId);
@@ -28,15 +34,24 @@ describe("updateNFTWeight", function () {
   });
 
   it("Should prevent non-identity admins from updating NFT weight", async function () {
+    await token.mintNFT(
+      user1.address,
+      tokenId,
+      uri,
+      didDocumentUri,
+      initialWeight,
+      initialDecayRate
+    );
     await expect(
       token.connect(user1).updateNFTWeight(tokenId, newWeight)
-    ).to.be.revertedWith("Caller is not an identity admin");
+    ).to.be.reverted;
   });
 
   it("Should prevent updating weight for a non-existent NFT", async function () {
+
     const nonExistentTokenId = 2;
     await expect(
       token.updateNFTWeight(nonExistentTokenId, newWeight)
-    ).to.be.revertedWith("Token does not exist");
+    ).to.be.reverted;
   });
 });

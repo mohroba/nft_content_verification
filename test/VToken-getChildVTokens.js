@@ -1,4 +1,8 @@
+const { expect } = require("chai");
+const { ethers } = require("hardhat");
+
 describe("Get Child VTokens", function () {
+    let token;
     let admin, verifier;
     const parentVTokenId = 1;
     const childVTokenId1 = 2;
@@ -6,6 +10,8 @@ describe("Get Child VTokens", function () {
 
     beforeEach(async function () {
         [admin, verifier] = await ethers.getSigners();
+        VToken = await ethers.getContractFactory("VToken");
+        token = await VToken.deploy("VTOKEN_URI");
         await token.initialize();
         await token.grantRole(token.VERIFIER_ROLE(), verifier.address);
         // Assume minting VTokens for testing, including parent and children

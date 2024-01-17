@@ -51,9 +51,9 @@ contract VToken is ERC1155, AccessControl, ReentrancyGuard, Initializable {
      * @dev Initializes the contract with default roles and mints a default token.
      */
     function initialize() public initializer {
-        AccessControl.grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        AccessControl.grantRole(VERIFIER_ROLE, msg.sender);
-        AccessControl.grantRole(ADVANCED_VERIFIER_ROLE, msg.sender);
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(VERIFIER_ROLE, msg.sender);
+        _grantRole(ADVANCED_VERIFIER_ROLE, msg.sender);
     }
 
     /**
@@ -212,6 +212,10 @@ contract VToken is ERC1155, AccessControl, ReentrancyGuard, Initializable {
     function getVerificationInfo(
         uint256 _vtokenId
     ) external view returns (VerificationData memory) {
+         require(
+            verifications[_vtokenId].itokenId != 0,
+            "VToken does not exist"
+        );
         return verifications[_vtokenId];
     }
 

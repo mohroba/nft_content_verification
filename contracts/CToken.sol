@@ -47,10 +47,10 @@ contract CToken is
      * @dev Initializes the contract with default roles and mints a default token.
      */
     function initialize() public initializer {
-        AccessControl.grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        AccessControl.grantRole(MINTER_ROLE, msg.sender);
-        AccessControl.grantRole(ROYALTY_MANAGER_ROLE, msg.sender);
-        AccessControl.grantRole(CONTENT_MANAGER_ROLE, msg.sender);
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(MINTER_ROLE, msg.sender);
+        _grantRole(ROYALTY_MANAGER_ROLE, msg.sender);
+        _grantRole(CONTENT_MANAGER_ROLE, msg.sender);
     }
 
     /**

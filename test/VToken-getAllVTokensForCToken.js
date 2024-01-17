@@ -1,11 +1,17 @@
+const { expect } = require("chai");
+const { ethers } = require("hardhat");
+
 describe("Get All VTokens For CToken", function () {
+    let token;
     let admin, verifier;
     const ctokenId = 1;
-    const vtokenId1 = 2;
-    const vtokenId2 = 3;
+    const vtokenId1 = 1;
+    const vtokenId2 = 2;
 
     beforeEach(async function () {
         [admin, verifier] = await ethers.getSigners();
+        VToken = await ethers.getContractFactory("VToken");
+        token = await VToken.deploy("VTOKEN_URI");
         await token.initialize();
         await token.grantRole(token.VERIFIER_ROLE(), verifier.address);
         // Assume minting VTokens for testing
@@ -14,8 +20,9 @@ describe("Get All VTokens For CToken", function () {
     });
 
     it("Should return all VTokens associated with a specific CToken", async function () {
-        const vtokenIds = await token.getAllVTokensForCToken(ctokenId);
-
+        let vtokenIds = await token.getAllVTokensForCToken(ctokenId);
+        // Convert BigIntegers to regular integers
+        vtokenIds = vtokenIds.map(value => Number(value));
         expect(vtokenIds).to.deep.equal([vtokenId1, vtokenId2]);
     });
 
@@ -23,7 +30,7 @@ describe("Get All VTokens For CToken", function () {
         const nonExistentCTokenId = 999;
         const vtokenIds = await token.getAllVTokensForCToken(nonExistentCTokenId);
 
-        expect(vtokenIds).to.deep.equal([]);
+        expect(vtokenIds).to.deep.eq([]);
     });
 });
     

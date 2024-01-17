@@ -66,28 +66,11 @@ contract IToken is ERC721, AccessControl, ReentrancyGuard, Initializable {
     event DIDDocumentURIUpdated(
         uint256 indexed tokenId,
         string newDidDocumentUri
-    );
-
-    // Modifiers
-    modifier onlyIdentityAdmin() {
-        require(
-            hasRole(IDENTITY_ADMIN_ROLE, msg.sender),
-            "Caller is not an identity admin"
-        );
-        _;
-    }
-
-    modifier onlyClaimIssuer() {
-        require(
-            hasRole(CLAIM_ISSUER_ROLE, msg.sender),
-            "Caller is not a claim issuer"
-        );
-        _;
-    }
+    );    
 
     // Internal helper functions
     function _exists(uint256 tokenId) internal view returns (bool) {
-        return ownerOf(tokenId) != address(0);
+        return tokenId==0 || nftsWithWeights[tokenId].tokenId!=0;
     }
 
     /**
@@ -106,9 +89,9 @@ contract IToken is ERC721, AccessControl, ReentrancyGuard, Initializable {
      * @dev Initializes the contract with default roles and mints a default token.
      */
     function initialize() public initializer {
-        AccessControl.grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        AccessControl.grantRole(IDENTITY_ADMIN_ROLE, msg.sender);
-        AccessControl.grantRole(CLAIM_ISSUER_ROLE, msg.sender);
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(IDENTITY_ADMIN_ROLE, msg.sender);
+        _grantRole(CLAIM_ISSUER_ROLE, msg.sender);
 
         // Mint a default token for initialization purposes
         _mint(msg.sender, 0);
@@ -133,9 +116,9 @@ contract IToken is ERC721, AccessControl, ReentrancyGuard, Initializable {
         string memory didDocumentUri,
         uint256 initialWeight,
         uint256 initialDecayRate
-    ) public onlyIdentityAdmin {
+    ) public onlyRole(IDENTITY_ADMIN_ROLE) {
         require(!_exists(tokenId), "Token already minted");
-        _mint(to, tokenId);
+        _safeMint(to, tokenId);
         nftsWithWeights[tokenId] = NFT(
             tokenId,
             uri,
@@ -151,6 +134,10 @@ contract IToken is ERC721, AccessControl, ReentrancyGuard, Initializable {
      * @param tokenId The ID of the token to burn.
      */
     function burnNFT(uint256 tokenId) public {
+        require(
+            _exists(tokenId),
+            "Token Not Found"
+        );
         require(
             isApprovedOrOwner(msg.sender, tokenId),
             "Caller is not owner nor approved"
@@ -181,7 +168,7 @@ contract IToken is ERC721, AccessControl, ReentrancyGuard, Initializable {
     function updateNFTWeight(
         uint256 tokenId,
         uint256 newWeight
-    ) public onlyIdentityAdmin {
+    ) public onlyRole(IDENTITY_ADMIN_ROLE) {
         require(_exists(tokenId), "Token does not exist");
         NFT storage nft = nftsWithWeights[tokenId];
         nft.weight = newWeight;
@@ -196,7 +183,7 @@ contract IToken is ERC721, AccessControl, ReentrancyGuard, Initializable {
     function updateDecayRate(
         uint256 tokenId,
         uint256 newDecayRate
-    ) public onlyIdentityAdmin {
+    ) public onlyRole(IDENTITY_ADMIN_ROLE) {
         require(_exists(tokenId), "Token does not exist");
         NFT storage nft = nftsWithWeights[tokenId];
         nft.decayRate = newDecayRate;
@@ -238,7 +225,7 @@ contract IToken is ERC721, AccessControl, ReentrancyGuard, Initializable {
         uint256 purpose,
         uint256 keyType,
         bytes32 key
-    ) public onlyIdentityAdmin {
+    ) public onlyRole(IDENTITY_ADMIN_ROLE) {
         require(_exists(tokenId), "NFT does not exist");
         bytes32 keyId = keccak256(abi.encodePacked(key, purpose, keyType));
         keys[keyId] = Key(purpose, keyType, key);
@@ -254,7 +241,7 @@ contract IToken is ERC721, AccessControl, ReentrancyGuard, Initializable {
     function removeKey(
         uint256 tokenId,
         bytes32 keyId
-    ) public onlyIdentityAdmin {
+    ) public onlyRole(IDENTITY_ADMIN_ROLE) {
         require(_exists(tokenId), "NFT does not exist");
         require(keys[keyId].key != bytes32(0), "Key does not exist");
         delete keys[keyId];
@@ -266,6 +253,15 @@ contract IToken is ERC721, AccessControl, ReentrancyGuard, Initializable {
             nftToKeyIds[tokenId].length - 1
         ];
         nftToKeyIds[tokenId].pop();
+    }
+
+    /**
+     * @dev Gets a key from an NFT.
+     * @param keyId The ID of the key to remove.
+     */
+    function getKey(bytes32 keyId) public view returns (Key memory) {
+        require(keys[keyId].key != bytes32(0), "Key does not exist");
+        return keys[keyId];
     }
 
     function findIndexOfKey(
@@ -298,7 +294,7 @@ contract IToken is ERC721, AccessControl, ReentrancyGuard, Initializable {
         bytes memory signature,
         bytes memory data,
         string memory uri
-    ) public onlyClaimIssuer {
+    ) public onlyRole(CLAIM_ISSUER_ROLE) {
         require(_exists(tokenId), "NFT does not exist");
         bytes32 claimId = keccak256(abi.encodePacked(issuer, claimType));
         claims[claimId] = Claim(
@@ -321,7 +317,7 @@ contract IToken is ERC721, AccessControl, ReentrancyGuard, Initializable {
     function removeClaim(
         uint256 tokenId,
         bytes32 claimId
-    ) public onlyClaimIssuer {
+    ) public onlyRole(CLAIM_ISSUER_ROLE) {
         require(_exists(tokenId), "NFT does not exist");
         require(claims[claimId].issuer != address(0), "Claim does not exist");
         delete claims[claimId];
@@ -333,6 +329,16 @@ contract IToken is ERC721, AccessControl, ReentrancyGuard, Initializable {
             nftToClaimIds[tokenId].length - 1
         ];
         nftToClaimIds[tokenId].pop();
+    }
+
+
+    /**
+     * @dev Gets a claim from an NFT.
+     * @param claimId The ID of the claim to remove.
+     */
+    function getClaim(bytes32 claimId) public view returns (Claim memory) {
+        require(claims[claimId].issuer != address(0), "Claim does not exist");
+        return claims[claimId];
     }
 
     function findIndexOfClaim(
@@ -355,7 +361,7 @@ contract IToken is ERC721, AccessControl, ReentrancyGuard, Initializable {
     function setDIDDocumentURI(
         uint256 tokenId,
         string memory didDocumentUri
-    ) public onlyIdentityAdmin {
+    ) public onlyRole(IDENTITY_ADMIN_ROLE) {
         require(_exists(tokenId), "Token does not exist");
         NFT storage nft = nftsWithWeights[tokenId];
         nft.didDocumentUri = didDocumentUri;
@@ -393,7 +399,7 @@ contract IToken is ERC721, AccessControl, ReentrancyGuard, Initializable {
     function isApprovedOrOwner(
         address spender,
         uint256 tokenId
-    ) internal view returns (bool) {
+    ) public view returns (bool) {
         address owner = _ownerOf(tokenId);
         return (spender == owner ||
             getApproved(tokenId) == spender ||

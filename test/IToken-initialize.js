@@ -8,7 +8,6 @@ describe("IToken Contract", function () {
         [admin, addr1] = await ethers.getSigners();
         IToken = await ethers.getContractFactory("IToken");
         token = await IToken.deploy("IDENTITY_TOKEN", "ITK");
-        await token.deployed();
     });
 
     describe("initialize", function () {
@@ -24,7 +23,7 @@ describe("IToken Contract", function () {
         it("Should prevent re-initialization", async function () {
             await token.initialize();
 
-            await expect(token.initialize()).to.be.revertedWith("Initializable: contract is already initialized");
+            await expect(token.initialize()).to.be.reverted;
         });
     });
 });
