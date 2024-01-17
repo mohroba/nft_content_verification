@@ -38,7 +38,7 @@ A step-by-step series of examples that tell you how to get a development environ
    ```
 
 ### Running Tests
-Explain how to run the automated tests for this system.
+How to run the automated tests for this system : 
 ```bash
 npx hardhat test
 ```
@@ -61,11 +61,11 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgments
 
-We would like to express our sincere appreciation to the following individuals, organizations, and projects that have contributed to the development and success of [Your Project Name]:
+I would like to express our sincere appreciation to the following individuals, organizations, and projects that have contributed to the development this project:
 
-- **[Name]:** Brief description or reason for acknowledgment.
-- **[Name]:** Brief description or reason for acknowledgment.
-- **[Name]:** Brief description or reason for acknowledgment.
+- **IKIU:** Imam Khomeini International University (Faculty of Computer Engineering).
+- **Dr.HamidReza Hamidi:** Assitant Professonr [@IKIU](https://ikiu.ac.ir/) & Supervisor of the project.
+
 
 Special thanks to the following open-source projects:
 
