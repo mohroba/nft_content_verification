@@ -42,6 +42,9 @@ Explain how to run the automated tests for this system.
 ```bash
 npx hardhat test
 ```
+#### Proof of last committed tests
+
+![Image proving all 86 tests pass successfully](test_proof.png)
 
 ## Project Structure
 - `artifacts/`: Compiled contract artifacts.
