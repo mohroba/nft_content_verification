@@ -1,3 +1,5 @@
+# Solidity API
+
 ## IToken
 
 _ERC721 token with identity features, access control, and reentrancy protection._
