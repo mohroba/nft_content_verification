@@ -1,4 +1,4 @@
-# NFT Verification System
+# NFT Based Content Authenticity & Verification System
 This project is a blockchain-based framework that focuses on enhancing the authenticity and credibility of content shared on social networks. Leveraging non-fungible tokens (NFTs), this project provides a solution for evaluating the authenticity of social media content.
 
 ## Features
