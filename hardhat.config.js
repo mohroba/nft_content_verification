@@ -2,10 +2,10 @@ require("hardhat-preprocessor");
 require("@nomiclabs/hardhat-etherscan");
 require("hardhat-gas-reporter");
 require("solidity-docgen");
-
 // Import OpenZeppelin plugin
 require("hardhat-contract-sizer");
 require("@openzeppelin/hardhat-upgrades");
+require("dotenv/config");
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -24,7 +24,7 @@ module.exports = {
       throwOnCallFailures: false,
     },
     verificationNetwork: {
-      url: "",
+      url: "https://api.etherscan.io/api",
     },
     ganache: {
       url: "http://localhost:7545", // Ganache's default RPC server URL
@@ -34,7 +34,7 @@ module.exports = {
       url: "https://rpc-mumbai.maticvigil.com",
       chainId: 80001,
       accounts: [
-        "7c3fc63514cb86af990525ff264cc6135dc2081b7796af9adaadba6920abb3b2",
+        process.env.MUMBAI_ACCOUNT_PRIVATE_KEY, // Account Private Key
       ],
     },
   },
@@ -43,7 +43,7 @@ module.exports = {
     currency: "USD",
   },
   etherscan: {
-    apiKey: "",
+    apiKey: process.env.ETHERSCAN_API_KEY,
   },
   docgen: {},
 };
