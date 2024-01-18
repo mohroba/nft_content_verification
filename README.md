@@ -64,7 +64,7 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 I would like to express our sincere appreciation to the following individuals, organizations, and projects that have contributed to the development this project:
 
 - **IKIU:** Imam Khomeini International University (Faculty of Computer Engineering).
-- **Dr.HamidReza Hamidi:** Assitant Professonr [@IKIU](https://ikiu.ac.ir/) & Supervisor of the project.
+- **Dr.HamidReza Hamidi:** Assitant Professor [@IKIU](https://ikiu.ac.ir/) & Supervisor of the project.
 
 
 Special thanks to the following open-source projects:
